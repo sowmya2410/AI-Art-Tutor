@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Gallery with Details</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden; /* Prevent body scroll */
+        }
+        .upload-btn {
+            margin-top: 20px; /* Space above the button */
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            z-index: 10;
+        }
+        .upload-btn:hover {
+            background-color: #45a049;
+        }
+        input[type="file"] {
+            display: none;
+        }
+        .gallery-container {
+            margin-top: 20px; /* Space for the button */
+            width: 80%;
+            max-width: 1200px;
+            height: calc(100vh - 70px); /* Adjust height to fit below the button */
+            overflow-y: auto; /* Allow scrolling within the container */
+        }
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 10px;
+            width: 100%;
+            grid-auto-rows: 1px;
+        }
+        .card {
+            position: relative;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            text-align: center;
+        }
+        .card img {
+            width: 100%;
+            height: auto;
+            object-fit: cover;
+            border-bottom: 1px solid #ddd;
+        }
+        .card-content {
+            padding: 10px;
+        }
+        .card-description {
+            font-size: 14px;
+            color: #333;
+            margin-bottom: 5px;
+        }
+        .card-cost {
+            font-size: 16px;
+            font-weight: bold;
+            color: #4CAF50;
+        }
+        .delete-btn {
+            position: absolute;
+            right: 10px;
+            bottom: 10px;
+            background-color: red;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 25px;
+            height: 25px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+        .delete-btn:before {
+            content: "✖";
+            font-size: 14px;
+        }
+        #imagePreview {
+            display: none;
+            position: fixed; /* Make preview modal fixed */
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 20; /* Ensure preview is above other content */
+        }
+        #imagePreview img {
+            max-width: 90%;
+            max-height: 90%;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+    <a href="/">Back to Home</a>
+    <button class="upload-btn" onclick="document.getElementById('fileInput').click()">Upload Image</button>
+    <div class="gallery-container">
+        <input type="file" id="fileInput" accept="image/*" onchange="uploadImage()">
+        <div class="gallery" id="gallery"></div>
+        <div id="imagePreview" onclick="this.style.display='none'">
+            <img id="previewImg" src="">
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', loadImagesFromLocalStorage);
+
+        function uploadImage() {
+            const fileInput = document.getElementById('fileInput');
+            const gallery = document.getElementById('gallery');
+            const description = prompt("Enter a description for the image:");
+            const cost = prompt("Enter the cost of the image:");
+
+            if (fileInput.files && fileInput.files[0]) {
+                const file = fileInput.files[0];
+                const reader = new FileReader();
+
+                reader.onload = function(e) {
+                    const imgSrc = e.target.result;
+                    const img = document.createElement('img');
+                    img.src = imgSrc;
+
+                    const cardContent = document.createElement('div');
+                    cardContent.classList.add('card-content');
+                    
+                    const imgDescription = document.createElement('div');
+                    imgDescription.classList.add('card-description');
+                    imgDescription.textContent = description;
+
+                    const imgCost = document.createElement('div');
+                    imgCost.classList.add('card-cost');
+                    imgCost.textContent = `${cost}`;
+
+                    cardContent.appendChild(imgDescription);
+                    cardContent.appendChild(imgCost);
+
+                    const deleteBtn = document.createElement('button');
+                    deleteBtn.classList.add('delete-btn');
+                    deleteBtn.onclick = function() {
+                        gallery.removeChild(card);
+                        removeImageFromLocalStorage(card);
+                    };
+
+                    const card = document.createElement('div');
+                    card.classList.add('card');
+                    card.appendChild(img);
+                    card.appendChild(cardContent);
+                    card.appendChild(deleteBtn);
+
+                    // Set the span for grid-row-end based on image height
+                    img.onload = function() {
+                        const rowSpan = Math.ceil((img.height + cardContent.offsetHeight) / 10);
+                        card.style.gridRowEnd = `span ${rowSpan}`;
+                    };
+
+                    gallery.appendChild(card);
+                    saveImageToLocalStorage(imgSrc, description, cost);
+                };
+
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function saveImageToLocalStorage(imgSrc, description, cost) {
+            const images = JSON.parse(localStorage.getItem('images')) || [];
+            images.push({ imgSrc, description, cost });
+            localStorage.setItem('images', JSON.stringify(images));
+        }
+
+        function loadImagesFromLocalStorage() {
+            const images = JSON.parse(localStorage.getItem('images')) || [];
+            const gallery = document.getElementById('gallery');
+
+            images.forEach(image => {
+                const img = document.createElement('img');
+                img.src = image.imgSrc;
+
+                const cardContent = document.createElement('div');
+                cardContent.classList.add('card-content');
+                
+                const imgDescription = document.createElement('div');
+                imgDescription.classList.add('card-description');
+                imgDescription.textContent = image.description;
+
+                const imgCost = document.createElement('div');
+                imgCost.classList.add('card-cost');
+                imgCost.textContent = `${image.cost}`;
+
+                cardContent.appendChild(imgDescription);
+                cardContent.appendChild(imgCost);
+
+                const deleteBtn = document.createElement('button');
+                deleteBtn.classList.add('delete-btn');
+                deleteBtn.onclick = function() {
+                    gallery.removeChild(card);
+                    removeImageFromLocalStorage(card);
+                };
+
+                const card = document.createElement('div');
+                card.classList.add('card');
+                card.appendChild(img);
+                card.appendChild(cardContent);
+                card.appendChild(deleteBtn);
+
+                // Set the span for grid-row-end based on image height
+                img.onload = function() {
+                    const rowSpan = Math.ceil((img.height + cardContent.offsetHeight) / 10);
+                    card.style.gridRowEnd = `span ${rowSpan}`;
+                };
+
+                gallery.appendChild(card);
+            });
+        }
+
+        function removeImageFromLocalStorage(card) {
+            const imgSrc = card.querySelector('img').src;
+            let images = JSON.parse(localStorage.getItem('images')) || [];
+            images = images.filter(image => image.imgSrc !== imgSrc);
+            localStorage.setItem('images', JSON.stringify(images));
+        }
+
+        document.getElementById('gallery').addEventListener('click', function(e) {
+            if (e.target && e.target.nodeName === 'IMG') {
+                const preview = document.getElementById('imagePreview');
+                const previewImg = document.getElementById('previewImg');
+                previewImg.src = e.target.src;
+                preview.style.display = 'flex';
+            }
+        });
+    </script>
+</body>
+</html>

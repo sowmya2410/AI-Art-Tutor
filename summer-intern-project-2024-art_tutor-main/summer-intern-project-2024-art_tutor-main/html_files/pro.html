@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Upload Images</title>
+    <style>
+        body {
+            background-image: url('static/12.png');
+            background-size: cover;
+            background-attachment: fixed;
+            text-align: center;
+        }
+
+        .handlee {
+            font-family: 'Handlee', cursive;
+            font-size: 1em;
+            color: #1d3557;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="handlee">
+        <h1>Tiny Triumphs</h1>
+        <h2>Every brushstroke is a sweet victory on your creative path!</h2>
+        <form action="/upload" method="post" enctype="multipart/form-data">
+            <label for="title">Title of the Drawing:</label>
+            <input type="text" name="title" required><br><br>
+            <label for="reference_image">Reference Image:</label>
+            <input type="file" name="reference_image" required><br><br>
+            <label for="user_image">Drawn Image:</label>
+            <input type="file" name="user_image" required><br><br>
+            <input type="submit" value="Submit">
+        </form>
+        <br>
+        <a href="/progress">Display Progress</a>
+    </div>
+</body>
+
+</html>

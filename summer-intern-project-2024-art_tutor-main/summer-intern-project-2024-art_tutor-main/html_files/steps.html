@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Progressive Drawing Steps</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+
+        #step-images {
+            display: none;
+            width: 100%;
+            height: 100vh;
+            /* Make the container take up the full viewport height */
+            margin-top: 20px;
+        }
+
+        .step-image {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            /* Ensure the image scales properly */
+            border: 1px solid black;
+        }
+
+        button {
+            margin: 10px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1>Progressive Drawing Steps</h1>
+
+    <!-- Button to choose an image -->
+    <input type="file" id="image-upload" accept="image/*">
+
+    <!-- Button to show drawing steps -->
+    <button id="draw-steps" onclick="showSteps()">How to Draw</button>
+
+    <label for="num-steps">Number of step images:</label>
+    <input type="number" id="num-steps" value="3" min="1" max="30">
+
+    <!-- Button to clear images -->
+    <button id="clear-images" onclick="clearSteps()">Clear Images</button>
+
+    <!-- Container to display the step images -->
+    <div id="step-images"></div>
+
+    <script>
+        let uploadedImage = null;
+        let stepImages = [];
+
+        // Event listener for image upload
+        document.getElementById("image-upload").addEventListener("change", function (event) {
+            const file = event.target.files[0];
+            const numSteps = document.getElementById("num-steps").value; // Get the number of steps
+            if (file) {
+                const formData = new FormData();
+                formData.append("image", file);
+                formData.append("num_steps", numSteps);  // Pass the number of steps
+
+                fetch("/upload_image", {
+                    method: "POST",
+                    body: formData,
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        stepImages = data.steps;
+                        alert("Image uploaded successfully! Click 'How to Draw' to see the steps.");
+                    })
+                    .catch(error => {
+                        console.error("Error:", error);
+                    });
+            }
+        });
+
+        // Function to display step images
+        function showSteps() {
+            if (stepImages.length === 0) {
+                alert("Please upload an image first.");
+                return;
+            }
+
+            const stepImagesDiv = document.getElementById("step-images");
+            stepImagesDiv.style.display = "block";
+            stepImagesDiv.innerHTML = "";  // Clear previous images
+
+            stepImages.forEach((image, index) => {
+                const imgElement = document.createElement("img");
+                imgElement.src = `data:image/png;base64,${image}`;
+                imgElement.className = "step-image";
+                stepImagesDiv.appendChild(imgElement);
+            });
+        }
+
+        // Function to clear displayed step images
+        // Function to clear displayed step images
+        function clearSteps() {
+            document.getElementById('image-upload').value = "";  // Clear the file input
+            const stepImagesDiv = document.getElementById("step-images");
+            stepImagesDiv.innerHTML = "";  // Clear the images
+            stepImagesDiv.style.display = "none";  // Hide the container
+            stepImages = [];  // Reset the step images array
+        }
+
+    </script>
+
+</body>
+
+</html>

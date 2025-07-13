@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Art Tutor</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Pacifico&family=Amatic+SC&family=Caveat&family=Indie+Flower&family=Satisfy&family=Courgette&family=Shadows+Into+Light&family=Sacramento&family=Handlee&display=swap"
+        rel="stylesheet">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="static/styles.css">
+    <!-- Favicon Link -->
+    <link rel="icon" type="image/png" href="static/95.ico">
+    <style>
+        .h2 {
+            font-family: 'Great Vibes', cursive;
+            font-size: 3.2em;
+            color: #000000;
+            text-align: center;
+
+        }
+
+        .h1 {
+            font-family: 'Courgette', cursive;
+            font-size: 1.2em;
+            color: #000000;
+        }
+
+        .courgette {
+            font-family: 'Courgette', cursive;
+            font-size: 1.5em;
+            color: #000000;
+        }
+
+        .bg {
+            height: 100vh;
+            background-image: url('static/i.jpg');
+            background-position: center;
+            background-attachment: fixed;
+            background-size:100% 100%;
+        }
+
+        .bg1 {
+            height: 100vh;
+            background-image: url('static/tree.png');
+            background-position: center;
+            background-attachment: fixed;
+            background-size: cover;
+        }
+
+        .navbar {
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            /* Ensures the navbar is above other content */
+        }
+
+        .navbar-nav .nav-link:hover {
+            color: lightgrey !important;
+            /* Set the hover color to light grey */
+        }
+
+        /* Adjust the padding-top value based on the actual height of your navbar */
+        #home,
+        #gallery,
+        #contact,
+        #chatbot {
+            padding-top: 56px;
+            /* Adjust if your navbar height is different */
+        }
+
+        .btn-light {
+            padding: 8px 12px;
+            /* Adjust padding for a smaller button */
+            font-size: 20px;
+            /* Change font size to make the button smaller */
+            border-radius: 5px;
+            /* Adjust border radius for a softer look */
+            transition: background-color 0.3s, color 0.3s;
+            /* Smooth transition for hover effect */
+        }
+
+        .btn-light:hover {
+            background-color: #f0f0f0;
+            /* Change background on hover */
+            color: #333;
+            /* Change text color on hover */
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Header -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark h1">
+        <a class="navbar-brand" href="#" style="color: white;font-size: 18px;">
+            <img src="static/95.ico" alt="Brush Icon" style="width: 34px; height: 34px; margin-right: 8px;">
+            Art Tutor
+        </a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="#home" style="color: white;font-size: 18px;">
+                        <i class="fas fa-home"></i> Home
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#gallery" style="color: white;font-size: 18px;">
+                        <i class="fas fa-palette"></i> Inspire Space
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#contact" style="color: white;font-size: 18px;">
+                        <i class="fas fa-envelope"></i> Say Hi
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href=" http://127.0.0.1:8888" style="color: white;font-size: 18px;" target="_blank">
+                        <i class="fas fa-pencil-alt"></i> Sketch Mate
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/art_reviewer" style="color: white;font-size: 18px;" target="_blank">
+                        <i class="fas fa-comments"></i> Art Whiz
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/art_qa" style="color: white;font-size: 18px;" target="_blank">
+                        <i class="fas fa-search"></i> Curious Brush
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/progress" style="color: white;font-size: 18px;" target="_blank">
+                        <i class="fas fa-chart-line"></i> My Path
+                    </a>
+                </li>
+
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <header id="home" class="hero bg-primary text-white text-center">
+        <div class="container ">
+            <h1 class="h2">Welcome to Art Tutor</h1>
+            <p class="courgette">Artistry Elevated: AI Tips for Every Stroke!</p>
+            <a class="courgette btn btn-lg btn-light" href="#gallery">Explore Gallery</a>
+        </div>
+    </header>
+
+    <!-- Gallery Section -->
+
+    <section id="gallery" class="py-5 bg1 ">
+        <div class="container ">
+
+            <h2 class="text-center h2">Art Gallery</h2>
+            <div class="row">
+                <!-- Example Art Piece -->
+                <div class="col-md-4 mb-4">
+                    <div class="card">
+                        <img src="static/art1.png" class="card-img-top" alt="Art 1">
+                        <div class="card-body">
+                            <h5 class="card-title h2" style="font-size: 1.5em;text-align: left;font-weight:bold;">Cute
+                                Lil Dino</h5>
+                            <p class="card-text h1" style="font-size: 14px;">A playful little dino with a big smile,
+                                surrounded by vibrant colors and tiny footprints.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <div class="card">
+                        <img src="static/teddy.jpg" class="card-img-top" alt="Art 2">
+                        <div class="card-body">
+                            <h5 class="card-title h2" style="font-size: 1.5em;text-align: left;font-weight:bold;">Teddy
+                                wallpaper</h5>
+                            <p class="card-text h1" style="font-size: 14px;">This soft and cuddly teddy sits in a dreamy
+                                setting, bringing warmth and sweetness.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <div class="card">
+                        <img src="static/16.png" class="card-img-top" alt="Art 3">
+                        <div class="card-body">
+                            <h5 class="card-title h2" style="font-size: 1.5em;text-align: left;font-weight:bold;">Paws
+                                of kittens</h5>
+                            <p class="card-text h1" style="font-size: 14px;">Adorable paws from playful pups and curious
+                                kittens, all in one heartwarming image.</p>
+                        </div>
+                    </div>
+                </div>
+                <!-- More art pieces can be added here similarly -->
+            </div>
+            <div style="text-align: center;">
+                <a class="courgette btn btn-lg btn-light" href="/gallery">view more</a>
+            </div>
+
+        </div>
+    </section>
+
+
+    <!-- Contact Section -->
+    <section id="contact" class="py-5 bg-light bg ">
+        <div class="container ">
+            <h2 class="text-center h2" style="color: #e31157;">Contact Us</h2>
+            <div class="row">
+                <div class="col-md-6 mx-auto h1">
+                    <form>
+                        <div class="form-group">
+                            <label for="name">Name</label>
+                            <input type="text" class="form-control" id="name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="email">Email</label>
+                            <input type="email" class="form-control" id="email" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="message">Message</label>
+                            <textarea class="form-control" id="message" rows="4" required></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-block "
+                            style="background-color: #fda8c4;color:#e31157;outline:#fda8c4;">Send Message</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Chatbot Section -->
+    <section id="chatbot" class="py-5 bg-dark text-white">
+        <div class="container">
+            <h2 class="text-center h2" style="color: white;">Chat with Art Tutor</h2>
+            <div id="messages-container" class="mb-3"></div>
+            <form id="message-form" class="d-flex h1">
+                <input type="text" id="message-input" class="form-control" placeholder="Type your message here..."
+                    required>
+                <button type="submit" class="btn ml-2"
+                    style="background-color: #fda8c4;color:#e31157;outline:#fda8c4;">Send</button>
+            </form>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-white text-center py-3">
+        <p class="mb-0 h1" style="color: white;">&copy; 2024 Art Tutor. All rights reserved.</p>
+    </footer>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="static/script.js"></script>
+    
+</body>
+
+</html>

@@ -1,0 +1,1086 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Roboto:wght@400;700&display=swap"
+        rel="stylesheet">
+    <title>Sketch Mate</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 0;
+            padding: 0;
+            background-image: url('static/4.jpg');
+            background-repeat: no-repeat;
+            background-attachment: scroll;
+            background-size: 100% 100%;
+            min-height: 100vh;
+            justify-content: center;
+            font-family: 'Pacifico', cursive;
+            overflow: auto;
+        }
+
+        #iframeContainer {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            border: 2px solid #ddd;
+            padding: 10px;
+            border-radius: 10px;
+            background-color: #f9f9f9;
+            margin-bottom: 20px;
+            height: 300px;
+            /* Set a fixed height in pixels */
+            max-width: 1200px;
+            /* Arrange children in a row */
+
+            /* Ensure max-height is still set */
+        }
+
+        #iframeContainer iframe {
+
+            width: 100%;
+            height: 100%;
+
+            max-width: 1000px;
+
+            text-align: center;
+            border: none;
+        }
+
+        #toolbar {
+            margin: 10px;
+            display: flex;
+            gap: 10px;
+        }
+
+        button,
+        select,
+        input[type="color"],
+        input[type="range"],
+        #saveButton {
+            padding: 8px 12px;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            background-color: #5cbdee;
+            color: #333;
+            font-size: 14px;
+            transition: background-color 0.3s transform 0.3s ease;
+        }
+
+        button:hover,
+        select:hover,
+        input[type="color"]:hover,
+        input[type="range"]:hover,
+        #saveButton:hover {
+            background-color: #b9d9f5;
+            transform: translateY(-3px);
+        }
+
+        button.active {
+            background-color: #bedae3;
+            border: 1px solid #888;
+        }
+
+        #toolbar button i {
+            font-size: 20px;
+        }
+
+        #toolbar span {
+            font-family: 'Pacifico', cursive;
+            font-size: 1em;
+            color: #000000;
+        }
+
+        #canvasContainer {
+            position: relative;
+            width: 1000px;
+            height: 800px;
+            border: 2px solid #333;
+            background-color: white;
+            overflow: hidden;
+            margin-bottom: 50px;
+        }
+
+        .canvasLayer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            border: 2px solid transparent;
+        }
+
+        #referenceSection {
+            margin-top: 20px;
+            position: relative;
+            margin-bottom: 20px;
+            text-align: center;
+            border: 2px solid #333;
+            padding: 10px;
+            background-color: #ffffff;
+            border-radius: 5px;
+        }
+
+        #referenceImage {
+            max-width: 100%;
+            max-height: 300px;
+            margin-top: 10px;
+            display: block;
+        }
+
+        #captionContainer {
+            margin-top: 20px;
+            font-size: 18px;
+            color: #333;
+            background-color: #ffffff;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            z-index: 1000;
+        }
+
+        .container {
+            height: 100%;
+            overflow-y: auto;
+            width: 100%;
+        }
+
+        .options-container {
+            display: grid;
+            grid-template-columns: repeat(6, auto);
+            /* Number of columns per row */
+            gap: 5px;
+            /* Space between options */
+        }
+
+        #aicontainer {
+            position: relative;
+            width: 800px;
+            height: 300px;
+            border: 2px solid #333;
+            background-color: white;
+            overflow: hidden;
+            margin-bottom: 50px;
+        }
+
+        #canvasAndReferenceContainer {
+            display: flex;
+            flex-direction: row;
+            margin: 15px;
+            /* Arrange children in a row */
+        }
+
+        .grid-line {
+            position: absolute;
+            background-color: rgba(0, 0, 0, 0.2);
+            /* Set grid line color */
+        }
+
+        .tooltip {
+            position: relative;
+            display: inline-block;
+            cursor: pointer;
+            color: #000000;
+        }
+
+        /* Tooltip content container (initially hidden) */
+        .tooltip-content {
+            display: none;
+            position: absolute;
+            top: 100%;
+            /* Position below the text */
+            left: 50%;
+            transform: translateX(-50%);
+            margin-top: 5px;
+            padding: 5px;
+            width: 180px;
+            background-color: #b9d9f5;
+            border: 1px solid #b9d9f5;
+            border-radius: 5px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            font-size: 0.9em;
+            color: #3a34b2;
+            z-index: 9999;
+        }
+
+        /* Show the tooltip content on hover */
+        .tooltip:hover .tooltip-content {
+            display: block;
+        }
+
+
+        /* Style for the image inside the tooltip */
+        .tooltip-image {
+            width: 100%;
+            height: auto;
+            border-radius: 5px;
+            margin-bottom: 3px;
+        }
+
+        /* Optional style for text inside the tooltip */
+        .tooltip-text {
+            font-size: 0.9em;
+            color: #333333;
+        }
+
+        .tooltip-texts {
+            font-size: 0.9em;
+            color: #333333;
+        }
+
+        #iframeContainers {
+            display: none;
+            /* Initially hide the iframe */
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            /* Semi-transparent background */
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        #myIframe {
+            width: 80%;
+            height: 80%;
+            border: none;
+            z-index: 1000;
+        }
+
+        .close-btn {
+            margin: 20px;
+            padding: 10px 20px;
+            background-color: #ff5555;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        .open-btn {
+            padding: 10px 20px;
+            background-color: #5cb85c;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="captionContainer">
+        <!--strong>Art Tutor:</strong> <span id="caption">Draw something to get feedback!</span-->
+        <strong>Squiggle Time:</strong> <span id="caption">Let’s Draw Something Adorable!</span>
+    </div>
+    <div id="toolbar">
+
+        <div class="options-container">
+            <select id="brushType" onchange="setBrushType(this.value)"
+                style="font-family:'Pacifico',cursive; color: #000000;">
+                <option value="marker" style="font-family:'Pacifico',cursive; color: #000000;">✏️ Pencil</option>
+                <option value="pen" style="font-family:'Pacifico',cursive; color: #000000;">✒️ Pen</option>
+                <option value="pencil" style="font-family:'Pacifico',cursive; color: #000000;">🖊️ Marke</option>
+                <option value="watercolor" style="font-family:'Pacifico',cursive; color: #000000;">🎨 Watercolor
+                </option>
+                <option value="spray" style="font-family:'Pacifico',cursive; color: #000000;">🖌️ Spray</option>
+                <option value="airbrush" style="font-family:'Pacifico',cursive; color: #000000;">🖍️ Airbrush</option>
+            </select>
+            <button id="eraserButton" onclick="setEraser()"><i class="fas fa-eraser"></i><span> Eraser</span></button>
+
+            <span class="tooltip">
+
+                <input type="color" id="colorPicker" value="#000000" onchange="setColor(this.value);updateProgress();"
+                    oninput="document.querySelector('.tooltip-texts').innerText = 'Color Hex-Value: ' + this.value;">
+                <div class="tooltip-content">
+
+                    <p class="tooltip-texts"></p>
+                </div>
+            </span>
+
+            <span class="tooltip">
+                <input type="range" id="brushSize" min="1" max="20" value="5" onchange="setBrushSize(this.value);"
+                    oninput="document.querySelector('.tooltip-text').innerText = 'Brush Size: ' + this.value;">
+
+                <div class="tooltip-content">
+                    <p class="tooltip-text"></p>
+
+                </div>
+            </span>
+
+            <label style="color: rgb(0, 0, 0);">
+                <input type="checkbox" id="outlineCheckbox" checked> Get Outline
+            </label>
+            <button onclick="undo()"><i class="fas fa-undo"></i> <span> Undo</span></button>
+            <button onclick="redo()"><i class="fas fa-redo"></i><span> Redo</span></button>
+            <button onclick="clearCanvas()"><i class="fas fa-times"></i><span> Clear Canvas</span></button>
+            <button id="saveButton" onclick="saveCanvas()"><i class="fas fa-download"></i><span> Save</span></button>
+            <button onclick="addLayer()"><span><i class="fas fa-layer-group"></i> Add Layer</span></button>
+            <select id="layerSelect" onchange="switchLayer(this.value)"
+                style="font-family:'Pacifico',cursive; color: #000000;">
+            </select>
+            <button onclick="deleteLayer()"><span><i class="fas fa-trash"></i> Delete Layer</span></button>
+
+            <span class="tooltip">
+                <button onclick="loadPage1()"><span><i class="fas fa-palette"></i> Show palette</span></button>
+                <div class="tooltip-content">
+
+                    <p class="tooltip-text">List of color swatches for the image chosen, alongside its RGB (Red, Green,
+                        Blue) values and hexadecimal code. This display helps you see the key colors in your image at a
+                        glance.</p>
+                </div>
+            </span>
+            <span class="tooltip">
+                <button onclick="loadPage2()"><span><i class="fas fa-images"></i> Get Step Images</span></button>
+                <div class="tooltip-content">
+
+                    <p class="tooltip-text">sequence of outline images from the original image in a step-by-step
+                        process. designed to help you visualize the outline of the image progressively, making it useful
+                        for sketching or studying the form of the object.</p>
+                </div>
+            </span>
+            <span class="tooltip">
+                <button onclick="loadPage5()"><span><i class="fas fa-tint"></i> Step Colors</span></button>
+                <div class="tooltip-content">
+
+                    <p class="tooltip-text">A coloring guide to understand the palette and color dynamics of the image
+                        that generates distinct color layers in a step-by-step manner, guiding users through the
+                        coloring process</p>
+                </div>
+            </span>
+            <span class="tooltip">
+                <button onclick="loadPage3()"><span><i class="fas fa-exchange-alt"></i> Style Transfer</span></button>
+                <div class="tooltip-content">
+
+                    <p class="tooltip-text">style transfer to blend the artistic style of one image with the style of
+                        another image, generating a unique, stylized Output</p>
+                </div>
+            </span>
+            <span class="tooltip">
+                <button onclick="loadPage4()"><span><i class="fas fa-layer-group"></i> Layer images</span></button>
+                <div class="tooltip-content">
+
+                    <p class="tooltip-text">This feature split the image into distinct layers by grouping pixels with
+                        similar colors to isolate particular elements for focused analysis.</p>
+                </div>
+            </span>
+            <button onclick="drawGrid()"><span><i class="fas fa-th"></i> Grid</span></button>
+            <div id="progressContainer" style="width: 100%; background-color: #aea9a9; border-radius: 5px;">
+                <div id="progressBar"
+                    style="width: 0%; height: 30px; background-color: #4caf50; text-align: center; line-height: 30px; color: white; border-radius: 5px;">
+                    0%</div>
+
+            </div>
+            <button id="closeButton" onclick="closeIframe()" style="display: none;"><span>Close Iframe</span></button>
+            <button class="open-btn" onclick="openIframe()">Art tutor</button>
+            <div id="iframeContainers">
+                <iframe id="myIframe" src="about:blank"></iframe>
+                <button class="close-btn" onclick="closeIframes()">Close</button>
+            </div>
+
+
+        </div>
+
+    </div>
+
+    <div id="referenceSection">
+        <h3>Reference Image</h3>
+        <input type="file" id="referenceLoader" accept="image/*" onchange="loadReference(event)">
+        <img id="referenceImage" src="" alt="Reference Image">
+    </div>
+
+    <div id="canvasAndReferenceContainer">
+        <div id="iframeContainer" style="display: none;margin-right:10px;">
+            <iframe id="iframe" src=""></iframe>
+        </div>
+
+        <div id="canvasContainer">
+            <canvas width="1000px" height="800px" class="canvasLayer"></canvas>
+        </div>
+    </div>
+
+    <script>
+        function openIframe() {
+            // Set the iframe's src to the desired URL or HTML content
+            document.getElementById('myIframe').src = 'http://127.0.0.1:5014/'; // Change this to your desired URL
+            document.getElementById('iframeContainers').style.display = 'flex'; // Show the iframe container
+        }
+
+        function closeIframes() {
+            document.getElementById('iframeContainers').style.display = 'none'; // Hide the iframe container
+            document.getElementById('myIframe').src = 'about:blank'; // Clear the iframe content
+        }
+
+        const canvasContainer = document.getElementById('canvasContainer');
+
+        let canvasLayers = [];
+        let ctxLayers = [];
+        let currentLayer = 0;
+        let brushSize = 5;
+        let color = '#000000';
+
+        let painting = false;
+        let history = [];
+        let historyStep = -1;
+        let tool = 'marker';
+        let currentColor = ' #ffffff';
+
+        const brushStyles = {
+            marker: { lineCap: 'round', lineJoin: 'round', strokeStyle: '#000' },
+            pen: { lineCap: 'butt', lineJoin: 'miter', strokeStyle: '#333' },
+            pencil: { lineCap: 'square', lineJoin: 'round', strokeStyle: '#888' },
+            watercolor: { lineCap: 'round', lineJoin: 'round', globalAlpha: 0.5, strokeStyle: '#555' },
+            spray: { lineCap: 'round', lineJoin: 'round' },
+            airbrush: { lineCap: 'round', lineJoin: 'round' },
+        };
+
+        function setEraser() {
+            tool = 'eraser';  // Switch to eraser tool
+            ctx.lineWidth = brushSize;
+            ctx.strokeStyle = '#ffffff';  // Set the stroke color to white for erasing
+        }
+
+        function loadPage1() {
+            var iframe = document.getElementById('iframe');
+            iframe.src = 'http://127.0.0.1:3000'; // Replace with your page URL
+            document.getElementById('iframeContainer').style.display = 'block';
+            document.getElementById('closeButton').style.display = 'inline-block';
+        }
+
+        function loadPage2() {
+            var iframe = document.getElementById('iframe');
+            iframe.src = 'http://127.0.0.1:4040'; // Replace with your page URL
+            document.getElementById('iframeContainer').style.display = 'block';
+            document.getElementById('closeButton').style.display = 'inline-block';
+        }
+
+        function loadPage3() {
+            var iframe = document.getElementById('iframe');
+            iframe.src = 'http://127.0.0.1:4000'; // Replace with your page URL
+            document.getElementById('iframeContainer').style.display = 'block';
+            document.getElementById('closeButton').style.display = 'inline-block';
+        }
+
+        function loadPage4() {
+            var iframe = document.getElementById('iframe');
+            iframe.src = 'http://127.0.0.1:9090'; // Replace with your page URL
+            document.getElementById('iframeContainer').style.display = 'block';
+            document.getElementById('closeButton').style.display = 'inline-block';
+        }
+
+        function loadPage5() {
+            var iframe = document.getElementById('iframe');
+            iframe.src = 'http://127.0.0.1:8000'; // Replace with your page URL
+            document.getElementById('iframeContainer').style.display = 'block';
+            document.getElementById('closeButton').style.display = 'inline-block';
+        }
+
+        function closeIframe() {
+            document.getElementById('iframeContainer').style.display = 'none';
+            document.getElementById('iframe').src = ""; // Clear the iframe content
+            document.getElementById('closeButton').style.display = 'none'; // Hide the close button
+        }
+
+        function initCanvasLayer() {
+            const canvas = document.createElement('canvas');
+            canvas.width = 1000;
+            canvas.height = 800;
+            canvas.classList.add('canvasLayer');
+            canvasContainer.appendChild(canvas);
+
+            const ctx = canvas.getContext('2d');
+            canvasLayers.push(canvas);
+            ctxLayers.push(ctx);
+
+            canvas.addEventListener('mousedown', startPosition);
+            canvas.addEventListener('mouseup', endPosition);
+            canvas.addEventListener('mousemove', draw);
+
+            return canvas;
+        }
+
+        function startPosition(e) {
+            painting = true;
+            draw(e);
+        }
+
+        function endPosition() {
+            painting = false;
+            ctxLayers[currentLayer].beginPath();
+            saveState();
+        }
+
+        function erase() {
+            ctx.lineWidth = brushSize;
+            ctx.fillStyle = '#ffffff';
+
+        }
+
+        function draw(e) {
+            if (!painting) return;
+
+            const ctx = ctxLayers[currentLayer];
+            ctx.lineWidth = brushSize;
+            ctx.strokeStyle = color;
+
+            const x = e.clientX - canvasContainer.getBoundingClientRect().left;
+            const y = e.clientY - canvasContainer.getBoundingClientRect().top;
+            if (tool === 'eraser') {
+                ctx.strokeStyle = '#ffffff';
+                ctx.fillStyle = '#ffffff';
+                ctx.lineTo(x, y);
+                ctx.stroke();
+                ctx.beginPath();
+                ctx.moveTo(x, y);
+
+            } else {
+
+                if (tool === 'marker') {
+                    ctx.lineTo(x, y);
+                    ctx.stroke();
+                    ctx.beginPath();
+                    ctx.moveTo(x, y);
+                } else if (tool === 'watercolor') {
+                    ctx.globalAlpha = 0.1; // Transparent layer for watercolor
+                    for (let i = 0; i < 20; i++) {
+                        const offsetX = (Math.random() - 0.5) * brushSize;
+                        const offsetY = (Math.random() - 0.5) * brushSize;
+                        ctx.fillStyle = color; // Use selected color
+                        ctx.fillRect(x + offsetX, y + offsetY, brushSize * 0.5, brushSize * 0.5); // Add randomness to edges
+                    }
+                } else if (tool === 'pencil') {
+                    ctx.globalAlpha = 1.0; // Opaque pencil strokes
+                    ctx.strokeStyle = color;
+                    for (let i = 0; i < 5; i++) { // Simulating graininess
+                        const offsetX = (Math.random() - 0.5) * brushSize * 0.2;
+                        const offsetY = (Math.random() - 0.5) * brushSize * 0.2;
+                        ctx.lineTo(x + offsetX, y + offsetY);
+                        ctx.stroke();
+                        ctx.beginPath();
+                        ctx.moveTo(x + offsetX, y + offsetY);
+                    }
+                }
+                else if (tool === 'pen') {
+                    ctx.globalAlpha = 1.0; // Opaque, clean strokes
+                    ctx.lineCap = 'butt'; // No rounded edges
+                    ctx.lineJoin = 'miter'; // Sharp corners
+                    ctx.strokeStyle = color;
+                    ctx.lineTo(x, y);
+                    ctx.stroke();
+                    ctx.beginPath();
+                    ctx.moveTo(x, y);
+                }
+
+
+
+                else if (tool === 'airbrush') {
+                    for (let i = 0; i < 30; i++) {
+                        const offsetX = (Math.random() - 0.5) * brushSize * 2;
+                        const offsetY = (Math.random() - 0.5) * brushSize * 2;
+                        ctx.fillRect(x + offsetX, y + offsetY, 1, 1);
+                    }
+                } else if (tool === 'spray') {
+                    for (let i = 0; i < 50; i++) {
+                        const angle = Math.random() * Math.PI * 2;
+                        const radius = Math.random() * brushSize;
+                        const offsetX = Math.cos(angle) * radius;
+                        const offsetY = Math.sin(angle) * radius;
+                        ctx.fillRect(x + offsetX, y + offsetY, 1, 1);
+                    }
+                }
+            }
+        }
+
+        function setBrushType(type) {
+            tool = type;
+            const ctx = ctxLayers[currentLayer];
+            const style = brushStyles[type];
+            Object.assign(ctx, style);
+            if (type !== 'watercolor') {
+                ctx.globalAlpha = 1.0;
+            }
+        }
+
+        function setColor(selectedColor) {
+            color = selectedColor;
+        }
+
+        function setBrushSize(size) {
+            brushSize = size;
+        }
+
+        function clearCanvas() {
+            ctxLayers[currentLayer].clearRect(0, 0, canvasLayers[currentLayer].width, canvasLayers[currentLayer].height);
+            saveState();
+        }
+
+        function saveState() {
+            history = history.slice(0, historyStep + 1);
+            history.push(canvasLayers[currentLayer].toDataURL());
+            historyStep++;
+        }
+
+        function undo() {
+            if (historyStep > 0) {
+                historyStep--;
+                restoreCanvas();
+            }
+        }
+
+        function redo() {
+            if (historyStep < history.length - 1) {
+                historyStep++;
+                restoreCanvas();
+            }
+        }
+
+        function restoreCanvas() {
+            const ctx = ctxLayers[currentLayer];
+            const img = new Image();
+            img.src = history[historyStep];
+            img.onload = () => {
+                ctx.clearRect(0, 0, canvasLayers[currentLayer].width, canvasLayers[currentLayer].height);
+                ctx.drawImage(img, 0, 0);
+            };
+        }
+
+        function addLayer() {
+            const canvas = initCanvasLayer();
+            const layerOption = document.createElement('option');
+            layerOption.value = canvasLayers.length - 1;
+            layerOption.text = `Layer ${canvasLayers.length}`;
+            document.getElementById('layerSelect').appendChild(layerOption);
+            switchLayer(canvasLayers.length - 1);
+        }
+
+        function switchLayer(layerIndex) {
+            currentLayer = layerIndex;
+        }
+
+        function deleteLayer() {
+            if (canvasLayers.length > 1) {
+                canvasLayers[currentLayer].remove();
+                canvasLayers.splice(currentLayer, 1);
+                ctxLayers.splice(currentLayer, 1);
+                document.getElementById('layerSelect').remove(currentLayer);
+                switchLayer(0);
+            }
+        }
+
+
+
+        function convertToOutline(img) {
+            const tempCanvas = document.createElement('canvas');
+            const tempCtx = tempCanvas.getContext('2d');
+            tempCanvas.width = img.width;
+            tempCanvas.height = img.height;
+
+            tempCtx.drawImage(img, 0, 0);
+            const imageData = tempCtx.getImageData(0, 0, img.width, img.height);
+            const data = imageData.data;
+
+            for (let i = 0; i < data.length; i += 4) {
+                const avg = (data[i] + data[i + 1] + data[i + 2]) / 3;
+                data[i] = avg;
+                data[i + 1] = avg;
+                data[i + 2] = avg;
+                data[i + 3] = 100;
+            }
+
+            tempCtx.putImageData(imageData, 0, 0);
+
+            return tempCanvas;
+        }
+
+        /*
+        function loadImage(event) {
+            const img = new Image();
+            img.onload = function () {
+                ctx.globalAlpha = 1.0;
+                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                saveState();
+            };
+            img.src = URL.createObjectURL(event.target.files[0]);
+        }*/
+
+        function loadReference(event) {
+            const img = new Image();
+
+            img.onload = function () {
+                // Set the canvas dimensions to match the image
+                //canvas.width = img.width;
+                //canvas.height = img.height;
+                const canvas = document.createElement('canvas');
+                canvas.width = 1000;
+                canvas.height = 800;
+                const ctx = ctxLayers[currentLayer];
+                // Clear the canvas and draw the outline if checked
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                if (document.getElementById('outlineCheckbox').checked) {
+                    const outlineCanvas = convertToOutline(img);
+                    ctx.globalAlpha = 0.5;
+                    ctx.drawImage(outlineCanvas, 0, 0, canvas.width, canvas.height);
+                }
+
+                // Reset globalAlpha for normal drawing
+                ctx.globalAlpha = 1.0;
+
+                saveState();
+            };
+            img.src = URL.createObjectURL(event.target.files[0]);
+            document.getElementById('referenceImage').src = img.src;
+        }
+
+        function saveCanvas() {
+            const link = document.createElement('a');
+            link.download = 'canvas_image.png';
+            link.href = canvasLayers[currentLayer].toDataURL();
+            link.click();
+        }
+
+        // Initialize first layer
+        addLayer();
+        let isDragging = false;
+        let refSection = document.getElementById('referenceSection');
+        let offsetX, offsetY;
+
+        refSection.addEventListener('mousedown', function (e) {
+            isDragging = true;
+            offsetX = e.clientX - refSection.offsetLeft;
+            offsetY = e.clientY - refSection.offsetTop;
+
+            if (tool === 'eraser') {
+                ctx.beginPath();  // Start a new path for erasing
+                ctx.moveTo(x, y);
+            }
+        });
+
+        document.addEventListener('mousemove', function (e) {
+            if (isDragging) {
+                refSection.style.left = (e.clientX - offsetX) + 'px';
+                refSection.style.top = (e.clientY - offsetY) + 'px';
+            }
+            if (tool === 'eraser') {
+                // Simulate eraser by drawing white lines (erasing)
+                ctx.strokeStyle = '#ffffff';  // Force eraser to white color
+                ctx.lineWidth = brushSize;
+                ctx.lineTo(x, y);
+                ctx.stroke();
+            }
+        });
+
+        document.addEventListener('mouseup', function () {
+            isDragging = false;
+
+            painting = false;
+            ctx.beginPath();
+        });
+
+    </script>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/ml5"></script>
+
+    <!-- Chatbot Container HTML -->
+    <div id="chatbotContainer">
+        <div id="chatbotHeader" onclick="toggleChatbot()">Chatbot</div>
+        <div id="chatContent" style="display: none;">
+            <div id="chatMessages"></div>
+            <input type="text" id="userMessage" placeholder="Type a message..."
+                onkeypress="if(event.key === 'Enter') sendMessage()" />
+            <div class="sendbutton">
+                <button onclick="sendMessage()" style="background-color: #333;color:white;">Send</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Styles for the Chatbot Container -->
+    <style>
+        #chatbotContainer {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 300px;
+            background-color: #f6d365;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            z-index: 9999;
+        }
+
+        #chatbotHeader {
+            background-color: #333;
+            color: white;
+            padding: 10px;
+            font-weight: bold;
+            text-align: center;
+            cursor: pointer;
+            border-radius: 10px 10px 0 0;
+        }
+
+        #chatContent {
+            display: flex;
+            flex-direction: column;
+            padding: 10px;
+            border-radius: 0 0 10px 10px;
+            background-color: #f9f9f9;
+        }
+
+        #chatMessages {
+            height: 200px;
+            overflow-y: auto;
+            background-color: white;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+
+        #userMessage {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            width: calc(100% - 60px);
+            margin-right: 5px;
+        }
+
+        .sendbutton {
+            padding: 10px;
+            background-color: #333;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-align: center;
+        }
+
+        .sendbutton:hover {
+            background-color: #444;
+        }
+    </style>
+
+    <!-- Script for Chatbot Behavior -->
+    <script>
+        let textFileData = '';  // Will store the text content from the "artset" file.
+
+        // Function to load text file
+        function loadTextFile() {
+            fetch('aiscrapedartset.txt')  // Fetch the file from its uploaded path
+                .then(response => response.text())
+                .then(data => {
+                    textFileData = data;  // Store text data
+                });
+        }
+
+        // Call the function to load the file when the page loads
+        window.onload = function () {
+            loadTextFile();
+        };
+
+        // Function to toggle the chatbot open/closed
+        function toggleChatbot() {
+            const chatContent = document.getElementById('chatContent');
+            if (chatContent.style.display === 'none') {
+                chatContent.style.display = 'flex';
+            } else {
+                chatContent.style.display = 'none';
+            }
+        }
+
+        // Function to send a message
+        function sendMessage() {
+            const userMessage = document.getElementById('userMessage').value;
+            const chatMessages = document.getElementById('chatMessages');
+
+            if (userMessage.trim() !== "") {
+                // Display user's message
+                const messageElement = document.createElement('div');
+                messageElement.textContent = 'You: ' + userMessage;
+                messageElement.style.margin = '10px 0';
+                messageElement.style.color = '#333';
+
+                chatMessages.appendChild(messageElement);
+                document.getElementById('userMessage').value = "";
+
+                // Scroll to the bottom of the chat window
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+
+                // Send the message to the backend via POST request
+                fetch('/chat', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ message: userMessage }),  // Sending user's message as JSON
+                })
+                    .then(response => response.json())  // Parse the JSON response
+                    .then(data => {
+                        // Display the chatbot's response
+                        const responseElement = document.createElement('div');
+                        responseElement.textContent = 'Chatbot: ' + data.response;
+                        responseElement.style.margin = '10px 0';
+                        responseElement.style.color = '#555';
+                        chatMessages.appendChild(responseElement);
+
+                        // Scroll to the bottom of the chat window after receiving response
+                        chatMessages.scrollTop = chatMessages.scrollHeight;
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                    });
+            }
+        }
+
+
+        // Function to get a response based on the user's message
+        async function getResponse(userMessage) {
+            // List of keywords to search in the file
+            const keywords = userMessage.trim().toLowerCase().split(' ');
+
+            // Search in the text file
+            for (let keyword of keywords) {
+                const match = getTextMatch(keyword);
+                if (match) {
+                    return match;
+                }
+            }
+
+            return "I couldn't find an answer related to your question. Can you try rephrasing?";
+        }
+
+        // Function to find a match in the text file based on keyword
+        function getTextMatch(keyword) {
+            const lines = textFileData.split('\n');
+            for (let line of lines) {
+                if (line.toLowerCase().includes(keyword)) {
+                    return line;  // Return the first matching line
+                }
+            }
+            return null;
+        }
+    </script>
+
+    <script>
+        function drawGrid(gridSize = 50) {
+            // Clear any existing grid lines
+            const container = document.getElementById('canvasContainer');
+            container.innerHTML = ''; // Clear previous lines
+
+            // Get container dimensions
+            const width = container.offsetWidth;
+            const height = container.offsetHeight;
+
+            // Draw vertical lines
+            for (let x = gridSize; x < width; x += gridSize) {
+                const line = document.createElement('div');
+                line.classList.add('grid-line');
+                line.style.width = '1px';
+                line.style.height = height + 'px';
+                line.style.left = x + 'px';
+                line.style.top = '0px';
+                container.appendChild(line);
+            }
+
+            // Draw horizontal lines
+            for (let y = gridSize; y < height; y += gridSize) {
+                const line = document.createElement('div');
+                line.classList.add('grid-line');
+                line.style.height = '1px';
+                line.style.width = width + 'px';
+                line.style.top = y + 'px';
+                line.style.left = '0px';
+                container.appendChild(line);
+            }
+        }
+    </script>
+    <script>
+        const canvas = document.getElementById('mainCanvas');
+        const ctx = canvas.getContext('2d');
+        const imageLoader = document.getElementById('referenceLoader');
+        const layerSelect = document.getElementById('layerSelect');
+        const colorPicker = document.getElementById('colorPicker');
+        const progressBar = document.getElementById('progressBar');
+
+        let strokeCount = 0;
+        let maxStrokes = 0;
+        let layerFormationCount = 0;
+        let progressPercentage = 0;
+
+        imageLoader.addEventListener('change', handleImageUpload);
+        canvas.addEventListener('mousedown', incrementStroke);
+
+        function handleImageUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                const img = new Image();
+                img.onload = function () {
+                    estimateStrokes(img);
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function estimateStrokes(image) {
+            const tempCanvas = document.createElement('canvas');
+            const tempCtx = tempCanvas.getContext('2d');
+            tempCanvas.width = image.width;
+            tempCanvas.height = image.height;
+
+            tempCtx.drawImage(image, 0, 0);
+            const imageData = tempCtx.getImageData(0, 0, tempCanvas.width, tempCanvas.height);
+            const data = imageData.data;
+            let edgePixels = 0;
+
+            for (let i = 0; i < data.length; i += 4) {
+                const alpha = data[i + 3]; if (alpha > 0) {
+                    const isEdgePixel = (i > 4 && data[i - 4] !== data[i]) || (i > tempCanvas.width * 4 && data[i - tempCanvas.width
+                        * 4] !== data[i]);
+                    if (isEdgePixel) edgePixels++;
+                }
+            }
+            maxStrokes = Math.ceil(edgePixels / 200);
+            updateProgress();
+        }
+
+        function incrementStroke() {
+            if (maxStrokes > 0) {
+                strokeCount++;
+                updateProgress();
+            }
+        }
+
+        function updateLayerCount() {
+            layerFormationCount = layerSelect.selectedIndex;
+            updateProgress();
+        }
+
+        function updateProgress() {
+            const strokesProgress = Math.min((strokeCount / maxStrokes) * 80, 80);
+            const colorProgress = colorPicker.value ? 10 : 0;
+            const layerProgress = Math.min((layerFormationCount / 5) * 10, 10);
+
+            progressPercentage = Math.min(strokesProgress + colorProgress + layerProgress, 100);
+
+            // Update progress bar
+            progressBar.style.width = progressPercentage + '%';
+            progressBar.innerText = Math.round(progressPercentage) + '%';
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            updateProgress();
+        });
+    </script>
+
+</body>
+
+</html>

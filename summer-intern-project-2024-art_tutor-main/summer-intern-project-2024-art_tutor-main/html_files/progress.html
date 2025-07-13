@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Progress</title>
+    <style>
+        #popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 200px;
+            height: 200px;
+            display: none;
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
+            /* Fade in and out transition */
+        }
+
+        /* Body content will be hidden initially */
+        #content {
+            display: none;
+        }
+
+        /* Hide the background image initially */
+        body {
+            background: none;
+            text-align: center;
+        }
+
+        .background-visible {
+            background-image: url('static/12.png');
+            background-size: cover;
+            background-attachment: fixed;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            border: 2px solid #000;
+            border-radius: 15px;
+            /* Curve the edges */
+            overflow: hidden;
+        }
+
+        th,
+        td {
+            border: 1px solid #000000;
+            padding: 8px;
+        }
+
+        th {
+            text-align: left;
+        }
+
+        .handlee {
+            font-family: 'Handlee', cursive;
+            font-size: 1em;
+            color: #1d3557;
+        }
+    </style>
+</head>
+
+<body>
+    <img id="popup" src="static/paint-tube.png" style="width:300px;height:300px;border-radius: 15px;" alt="Pop-up Image">
+    <div id="content" class="handlee">
+        <h1>Creative Footprints</h1>
+        <h2>Watch your artistic footprints lead you to new and exciting horizons!</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Title</th>
+                    <th>Similarity (%)</th>
+                    <th>Feedback</th>
+                    <th>Date & Time</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for entry in progress_data %}
+                <tr>
+                    <td>{{ entry.title }}</td>
+                    <td>{{ entry.similarity }}</td>
+                    <td>{{ entry.feedback }}</td>
+                    <td>{{ entry.timestamp }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <br>
+        <a href="/pro">Go Back</a>
+    </div>
+    <script>
+        // Function to show pop-up and then hide after 2 seconds
+        window.onload = function() {
+            const popup = document.getElementById('popup');
+            const content = document.getElementById('content');
+            const body = document.body;
+
+            // Show the pop-up with a fade-in effect
+            popup.style.display = 'block';
+            setTimeout(() => {
+                popup.style.opacity = '1';
+            }, 100); // slight delay for smoother fade-in
+
+            // Hide the pop-up after 2 seconds
+            setTimeout(() => {
+                popup.style.opacity = '0'; // Start fading out
+                setTimeout(() => {
+                    popup.style.display = 'none'; // Completely hide after fade-out
+                    content.style.display = 'block'; // Show the main content
+                    body.classList.add('background-visible'); // Add background after pop-up
+                }, 500); // Wait for the fade-out transition (0.5s)
+            }, 2000); // 2 seconds delay before hiding
+        };
+    </script>
+</body>
+
+</html>

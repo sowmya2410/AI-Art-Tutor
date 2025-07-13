@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Step-by-Step Coloring</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f5;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 600px;
+            /* Smaller width */
+            margin: 0 auto;
+            background-color: white;
+            padding: 15px;
+            /* Adjusted padding */
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+
+        form {
+            margin-bottom: 15px;
+        }
+
+        label {
+            font-weight: bold;
+            margin-right: 10px;
+        }
+
+        input[type="file"],
+        input[type="number"],
+        button {
+            margin: 10px 0;
+            padding: 8px;
+            font-size: 14px;
+            /* Adjusted font size */
+            border-radius: 4px;
+            border: 1px solid #ccc;
+        }
+
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        .output {
+            margin-top: 15px;
+            /* Reduced margin */
+        }
+
+        .step-images img {
+            max-width: 100%;
+            /* Full width to fit container */
+            margin-bottom: 20px;
+            /* Spacing between images */
+            display: block;
+            /* Display block to show one image at a time vertically */
+            border: 2px solid #ddd;
+            /* Larger border for better visibility */
+            border-radius: 8px;
+            padding: 10px;
+        }
+
+        .step-images {
+            text-align: center;
+            /* Center alignment for images */
+        }
+    </style>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Generate Step-by-Step Coloring</h1>
+        <form id="imageForm" enctype="multipart/form-data">
+            <label for="image">Choose an image:</label>
+            <input type="file" id="image" name="image" accept="image/*" required>
+            <br><label for="steps">Number of Steps:</label>
+            <input type="number" id="steps" name="steps" min="1" max="10" value="5" required>
+            <button type="submit">Generate Color Steps</button>
+        </form>
+        <button id="clearBtn">Clear</button>
+
+        <div id="output" class="output">
+            <h2>Step-by-Step Images</h2>
+            <div id="stepImages" class="step-images"></div>
+        </div>
+    </div>
+
+    <script>
+        $('#imageForm').on('submit', function (e) {
+            e.preventDefault();
+            var formData = new FormData(this);
+            $.ajax({
+                type: 'POST',
+                url: '/generate',
+                data: formData,
+                contentType: false,
+                processData: false,
+                success: function (response) {
+                    $('#stepImages').empty();
+                    if (response.steps) {
+                        response.steps.forEach((step, index) => {
+                            $('#stepImages').append('<img src="' + step + '" alt="Step ' + (index + 1) + '">');
+                        });
+                    } else {
+                        alert('Error generating steps');
+                    }
+                }
+            });
+        });
+
+        $('#clearBtn').on('click', function () {
+            document.getElementById('imageForm').reset();
+            $.post('/clear', function (response) {
+                $('#stepImages').empty();
+                alert(response.message);
+            });
+        });
+    </script>
+</body>
+
+</html>

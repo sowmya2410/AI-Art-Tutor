@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Color Palette Generator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin-top: 50px;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .buttonContainer {
+            display: flex;
+            justify-content: center;
+            /* Center the buttons */
+            gap: 10px;
+            /* Space between the buttons (adjust this as needed) */
+            padding: 10px;
+        }
+
+        .leftButton,
+        .rightButton {
+            background-color: #4CAF50;
+            /* Green background for both */
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        .rightButton {
+            background-color: #f44336;
+            /* Red background for Clear button */
+        }
+
+        .leftButton:hover,
+        .rightButton:hover {
+            opacity: 0.9;
+            /* Slight transparency on hover */
+        }
+
+
+        .results {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 20px;
+        }
+
+        .results img {
+            width: 500px;
+            height: 500px;
+            object-fit: contain;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Generate a Color Palette & Get Suggestions</h1>
+        <form id="uploadForm" method="POST" enctype="multipart/form-data" onsubmit="handleSubmit(event)">
+            <div class="upload-box">
+                <input type="file" name="file" id="referenceImage" accept="image/*" onchange="loadReference(event)"
+                    required><br>
+                <div class="buttonContainer">
+                    <button type="submit" class="leftButton">Upload</button>
+                    <input type="button" value="Clear" class="rightButton" onclick="clearForm()">
+                </div>
+            </div>
+        </form>
+
+        <div id="suggestionBox" style="display: none;">
+            <p>Suggested Brush: <span id="brushType"></span></p>
+            <p>Suggested Painting Operation: <span id="paintingOperation"></span></p>
+        </div>
+        <div class="results">
+            {% if img_data %}
+            <div class="palette">
+                <h3>Color Palette</h3>
+                <img src="data:image/png;base64,{{ img_data }}" alt="Color Palette">
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <script>
+        let referenceImageFile;
+
+        function loadReference(event) {
+            referenceImageFile = event.target.files[0];
+        }
+
+        function handleSubmit(event) {
+            event.preventDefault(); // Prevent the default form submission behavior
+
+            const formData = new FormData();
+            formData.append('file', referenceImageFile);
+
+            fetch('/upload_and_generate', {
+                method: 'POST',
+                body: formData
+            })
+                .then(response => response.json())
+                .then(data => {
+                    // Update the palette image
+                    if (data.img_data) {
+                        const paletteImg = document.createElement('img');
+                        paletteImg.src = 'data:image/png;base64,' + data.img_data;
+                        paletteImg.alt = 'Color Palette';
+                        paletteImg.width = 500;
+                        paletteImg.height = 500;
+                        document.querySelector('.results').innerHTML = `
+                        <h3>Color Palette</h3>
+                    `;
+                        document.querySelector('.results').appendChild(paletteImg);
+                    }
+
+                    // Display suggestions
+                    document.getElementById('brushType').innerText = data.brush_suggestion;
+                    document.getElementById('paintingOperation').innerText = data.operation_suggestion;
+                    document.getElementById('suggestionBox').style.display = 'block';
+                })
+                .catch(error => {
+                    console.error('Error fetching suggestions and generating palette:', error);
+                });
+        }
+
+        function clearForm() {
+            // Reset the form fields
+            document.getElementById('uploadForm').reset();
+
+            // Clear the palette and suggestion areas
+            document.querySelector('.results').innerHTML = ''; // Clear the generated palette
+            document.getElementById('suggestionBox').style.display = 'none'; // Hide suggestions box
+            document.getElementById('brushType').innerText = ''; // Clear the brush suggestion
+            document.getElementById('paintingOperation').innerText = ''; // Clear the painting operation suggestion
+        }
+
+    </script>
+</body>
+
+</html>

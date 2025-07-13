@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Style Transfer</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .image-display {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            height: 100%; /* Ensure it fits within the iframe container */
+        }
+
+        .image-container {
+            margin-bottom: 20px;
+            border: 1px solid #ddd;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 100%; /* Makes image fit the container width */
+            max-width: 300px; /* Fixed width for consistent sizing */
+            text-align: center;
+        }
+
+        .image-container img {
+            width: 100%; /* Fit the container width */
+            height: auto; /* Maintain aspect ratio */
+        }
+
+        .image-container h2 {
+            margin: 10px 0;
+        }
+
+        .button-container {
+            margin-top: 20px;
+        }
+
+        .button-container input[type="submit"],
+        .button-container input[type="button"] {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+
+        .button-container input[type="button"] {
+            background-color: #f44336;
+            color: white;
+            border: none;
+        }
+
+        .button-container input[type="button"]:hover {
+            background-color: #d32f2f;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Style Transfer</h1>
+        <form id="imageForm" method="POST" enctype="multipart/form-data">
+            <label for="content_image">Upload Content Image:</label>
+            <input type="file" id="content_image" name="content_image" required><br><br>
+
+            <label for="style_image">Upload Style Image:</label>
+            <input type="file" id="style_image" name="style_image" required><br><br>
+
+            <div class="button-container">
+                <input type="submit" value="Stylize">
+                <input type="button" value="Clear" onclick="clearForm()">
+            </div>
+        </form>
+
+        {% if content_image %}
+        <!-- Image display section -->
+        <div class="image-display" id="iframeContainer">
+            <div class="image-container">
+                <h2>Content Image</h2>
+                <img src="{{ content_image }}" alt="Content Image">
+            </div>
+
+            <div class="image-container">
+                <h2>Style Image</h2>
+                <img src="{{ style_image }}" alt="Style Image">
+            </div>
+
+            <div class="image-container">
+                <h2>Stylized Image</h2>
+                <img src="{{ stylized_image }}" alt="Stylized Image">
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    <script>
+        function clearForm() {
+            document.getElementById('imageForm').reset();
+            // Optionally, remove displayed images if needed
+            document.querySelectorAll('.image-container img').forEach(img => img.src = '');
+        }
+    </script>
+</body>
+</html>
